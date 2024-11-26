@@ -2,7 +2,7 @@
 
 ## Clone this project to your computer:
 ```bash
-git clone https://github.com/yourusername/price-tracking-project.git
+git clone https://github.com/username/PriceTracker.git
 cd PriceTracker
 ```
 
