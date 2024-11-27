@@ -18,9 +18,16 @@ def create_db():
                         price REAL,
                         date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE CASCADE)''')
+
+    # Create Users table to store email and product association
+    cursor.execute('''CREATE TABLE IF NOT EXISTS Users (
+                        user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        email TEXT,
+                        product_url TEXT,
+                        FOREIGN KEY (product_url) REFERENCES Products(product_url) ON DELETE CASCADE)''')
     
     conn.commit()
     conn.close()
 
-# Insert product details into the database
+# Veritabanını oluşturuyoruz
 create_db()
