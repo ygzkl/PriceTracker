@@ -5,7 +5,7 @@ import re
 
 # Function that adds or updates product and price in the database
 def add_or_update_product_and_price(product_id, product_name, price, url):
-    conn = sqlite3.connect('products.db', timeout=10)  # Set timeout to 10 seconds
+    conn = sqlite3.connect('products.db', timeout=10)
     cursor = conn.cursor()
 
     try:
@@ -14,12 +14,10 @@ def add_or_update_product_and_price(product_id, product_name, price, url):
         result = cursor.fetchone()
 
         if not result:
-            # If the product doesn't exist, add it to the Products table
             cursor.execute("INSERT INTO Products (product_id, product_name, product_url) VALUES (?, ?, ?)", 
                            (product_id, product_name, url))
             print(f"Added new product: {product_name} (ID: {product_id})")
         else:
-            # Optionally update the product name (if needed)
             cursor.execute("UPDATE Products SET product_name = ? WHERE product_id = ?", 
                            (product_name, product_id))
             print(f"Updated product name for ID: {product_id}")
@@ -29,12 +27,10 @@ def add_or_update_product_and_price(product_id, product_name, price, url):
                        (product_id, price))
         print(f"Price {price} for product '{product_name}' added to database.")
 
-        # Commit the changes
         conn.commit()
     except sqlite3.OperationalError as e:
         print(f"Database error: {e}")
     finally:
-        # Ensure that the connection is closed properly
         conn.close()
 
 # Function that fetches product details from the URL
@@ -60,14 +56,15 @@ def get_product_details(url):
     # Extract product price
     price_element = soup.find('span', class_='a-price-whole')
     if price_element:
-        whole_price = price_element.text.strip().replace(',', '')  # Remove commas
+        whole_price = price_element.text.strip().replace('.', '').replace(',', '')
         fraction_element = soup.find('span', class_='a-price-fraction')
         fraction_price = fraction_element.text.strip() if fraction_element else '00'
         currency_element = soup.find('span', class_='a-price-symbol')
         currency = currency_element.text.strip() if currency_element else ''
-        price = f"{whole_price}.{fraction_price} {currency}"
+
+        price = float(f"{whole_price}.{fraction_price}")
     else:
-        price = None 
+        price = None
 
     # Extract product ID from the URL
     match = re.search(r'/dp/([A-Za-z0-9]+)', url)
