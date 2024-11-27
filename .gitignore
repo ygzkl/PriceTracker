@@ -1,2 +1,5 @@
 # Ignore the database file
 products.db
+
+# Ignore the folders
+/__pycache__/

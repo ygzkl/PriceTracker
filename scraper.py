@@ -4,31 +4,38 @@ import sqlite3
 import re
 
 # Function that adds or updates product and price in the database
-def add_or_update_product_and_price(product_id, product_name, price):
-    conn = sqlite3.connect('products.db')
+def add_or_update_product_and_price(product_id, product_name, price, url):
+    conn = sqlite3.connect('products.db', timeout=10)  # Set timeout to 10 seconds
     cursor = conn.cursor()
 
-    # Add product to the Products table if it doesn't exist
-    cursor.execute("SELECT product_id FROM Products WHERE product_id = ?", (product_id,))
-    result = cursor.fetchone()
+    try:
+        # Check if product already exists in the Products table
+        cursor.execute("SELECT product_id FROM Products WHERE product_id = ?", (product_id,))
+        result = cursor.fetchone()
 
-    if result:
-        product_id_in_db = result[0]
-    else:
-        # If the product doesn't exist, add it to the Products table
-        cursor.execute("INSERT INTO Products (product_id, product_name, product_url) VALUES (?, ?, ?)", 
-                       (product_id, product_name, url))
+        if not result:
+            # If the product doesn't exist, add it to the Products table
+            cursor.execute("INSERT INTO Products (product_id, product_name, product_url) VALUES (?, ?, ?)", 
+                           (product_id, product_name, url))
+            print(f"Added new product: {product_name} (ID: {product_id})")
+        else:
+            # Optionally update the product name (if needed)
+            cursor.execute("UPDATE Products SET product_name = ? WHERE product_id = ?", 
+                           (product_name, product_id))
+            print(f"Updated product name for ID: {product_id}")
+
+        # Add the price to the Prices table
+        cursor.execute("INSERT INTO Prices (product_id, price) VALUES (?, ?)", 
+                       (product_id, price))
+        print(f"Price {price} for product '{product_name}' added to database.")
+
+        # Commit the changes
         conn.commit()
-        product_id_in_db = product_id  # Use the URL's product_id as the primary key
-
-    # Add the price to the Prices table
-    cursor.execute("INSERT INTO Prices (product_id, price) VALUES (?, ?)", 
-                   (product_id_in_db, price))
-    conn.commit()
-
-    print(f"Product '{product_name}' with price {price} has been added/updated.")
-
-    conn.close()
+    except sqlite3.OperationalError as e:
+        print(f"Database error: {e}")
+    finally:
+        # Ensure that the connection is closed properly
+        conn.close()
 
 # Function that fetches product details from the URL
 def get_product_details(url):
@@ -43,43 +50,35 @@ def get_product_details(url):
     
     soup = BeautifulSoup(response.content, 'html.parser')
     
-    # Name of the product
+    # Extract product name
     product_title = soup.find(id='productTitle')
     if product_title:
         product_name = product_title.text.strip()
     else:
         product_name = "Error: Product title not found"
     
-    # Price of the product
+    # Extract product price
     price_element = soup.find('span', class_='a-price-whole')
     if price_element:
-        whole_price = price_element.text.strip()
+        whole_price = price_element.text.strip().replace(',', '')  # Remove commas
         fraction_element = soup.find('span', class_='a-price-fraction')
-        if fraction_element:
-            fraction_price = fraction_element.text.strip()
-            currency_element = soup.find('span', class_='a-price-symbol')
-            currency = currency_element.text.strip() if currency_element else ''
-            price = f"{whole_price}{fraction_price} {currency}"
-        else:
-            price = None 
+        fraction_price = fraction_element.text.strip() if fraction_element else '00'
+        currency_element = soup.find('span', class_='a-price-symbol')
+        currency = currency_element.text.strip() if currency_element else ''
+        price = f"{whole_price}.{fraction_price} {currency}"
     else:
         price = None 
 
-    # Get product ID from the URL
+    # Extract product ID from the URL
     match = re.search(r'/dp/([A-Za-z0-9]+)', url)
     if match:
-        product_id = match.group(1) 
+        product_id = match.group(1)
     else:
         return "Error: Unable to extract product ID from the URL."
 
     # Save the product and price to the database if the price is found
     if price:
-        add_or_update_product_and_price(product_id, product_name, price)
+        add_or_update_product_and_price(product_id, product_name, price, url)
         return f"Product: {product_name}\nPrice: {price}\nProduct ID: {product_id}"
     else:
         return "Error: Price not found, not saved to the database."
-
-# Get the product URL from the user
-url = input("Please enter the product URL: ")
-product_details = get_product_details(url)
-print(product_details)
