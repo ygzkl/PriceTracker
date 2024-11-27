@@ -37,7 +37,6 @@ def update_all_products():
 
     for product in products:
         product_url = product[0]
-        print(f"Updating product: {product_url}")
         try:
             product_details = get_product_details(product_url)
             
@@ -82,4 +81,4 @@ def update_all_products():
 while True:
     update_all_products()
     print("All products updated. Waiting for the next update...")
-    time.sleep(60)  # Update every minute
+    time.sleep(600)  # Update every minute

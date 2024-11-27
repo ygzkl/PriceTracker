@@ -29,5 +29,4 @@ def create_db():
     conn.commit()
     conn.close()
 
-# Veritabanını oluşturuyoruz
 create_db()

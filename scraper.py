@@ -20,12 +20,10 @@ def add_or_update_product_and_price(product_id, product_name, price, url):
         else:
             cursor.execute("UPDATE Products SET product_name = ? WHERE product_id = ?", 
                            (product_name, product_id))
-            print(f"Updated product name for ID: {product_id}")
 
         # Add the price to the Prices table
         cursor.execute("INSERT INTO Prices (product_id, price) VALUES (?, ?)", 
                        (product_id, price))
-        print(f"Price {price} for product '{product_name}' added to database.")
 
         conn.commit()
     except sqlite3.OperationalError as e:
