@@ -1,6 +1,6 @@
 # PriceTracker
 
-**PriceTracker** is a price monitoring tool specifically designed for Amazon products. It helps users track product prices by scraping product details such as names, prices, and IDs from Amazon URLs. The application stores this data in a database and monitors price changes over time. 
+**PriceTracker** is a tool designed to monitor and track price changes for Amazon products. By scraping product details such as name, price, and product ID from Amazon.com.tr URLs, it helps users stay informed of price fluctuations. The tool stores this data in a local SQLite database and sends email notifications when the price of a tracked product drops, ensuring users never miss a price change.
 
 
 ## Features
