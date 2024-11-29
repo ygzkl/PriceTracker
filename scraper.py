@@ -17,9 +17,6 @@ def add_or_update_product_and_price(product_id, product_name, price, url):
             cursor.execute("INSERT INTO Products (product_id, product_name, product_url) VALUES (?, ?, ?)", 
                            (product_id, product_name, url))
             print(f"Added new product: {product_name} (ID: {product_id})")
-        else:
-            cursor.execute("UPDATE Products SET product_name = ? WHERE product_id = ?", 
-                           (product_name, product_id))
 
         # Add the price to the Prices table
         cursor.execute("INSERT INTO Prices (product_id, price) VALUES (?, ?)", 
@@ -57,9 +54,7 @@ def get_product_details(url):
         whole_price = price_element.text.strip().replace('.', '').replace(',', '')
         fraction_element = soup.find('span', class_='a-price-fraction')
         fraction_price = fraction_element.text.strip() if fraction_element else '00'
-        currency_element = soup.find('span', class_='a-price-symbol')
-        currency = currency_element.text.strip() if currency_element else ''
-
+        
         price = float(f"{whole_price}.{fraction_price}")
     else:
         price = None

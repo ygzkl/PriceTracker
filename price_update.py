@@ -58,13 +58,7 @@ def update_all_products():
                 last_price = last_price[0]
                 if float(last_price) != float(price):
                     print(f"Price changed for {product_name}:\n\n")
-                    
-                    # Save the last price to the Prices table
-                    cursor.execute("INSERT INTO Prices (product_id, price) VALUES (?, ?)", (product_id, price))
-
-
-                    
-
+                          
                     # Send email to users who are tracking this product
                     cursor.execute("SELECT email FROM Users WHERE product_url = ?", (product_url,))
                     users = cursor.fetchall()
@@ -79,18 +73,16 @@ def update_all_products():
                 else:
                     print(f"No price change for {product_name} (ID: {product_id})")
             else:
-                # Add first price to the Prices table
-                cursor.execute("INSERT INTO Prices (product_id, price) VALUES (?, ?)", (product_id, price))
                 conn.commit()
             
         except Exception as e:
             print(f"Error updating product {product_url}: {e}")
 
-        time.sleep(4)
+        time.sleep(2)
         
     conn.close()
 
 while True:
     update_all_products()
     print("All products updated. Waiting for the next update...")
-    time.sleep(10)  # Update every minute
+    time.sleep(5)  # Update every minute
