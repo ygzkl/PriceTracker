@@ -2,11 +2,16 @@ import os
 import sqlite3
 import time
 import smtplib
+from dotenv import load_dotenv
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from scraper import get_product_details
 
 def send_email(to_email, subject, body):
+
+    load_dotenv()
+    time.sleep(1)
+
     from_email = os.getenv("EMAIL")
     password = os.getenv("PASSWORD")
 
@@ -43,7 +48,7 @@ def update_all_products():
             # Update the product name, price and product ID
             product_id = product_details.split("\n")[2].replace("Product ID: ", "")
             
-            cursor.execute("SELECT price FROM Prices WHERE product_id = ? ORDER BY date DESC LIMIT 1", (product_id,))
+            cursor.execute("SELECT price FROM Prices WHERE product_id = ? ORDER BY date DESC LIMIT 1 OFFSET 1", (product_id,))
             last_price = cursor.fetchone()
 
             product_name = product_details.split("\n")[0].replace("Product: ", "")
@@ -56,7 +61,9 @@ def update_all_products():
                     
                     # Save the last price to the Prices table
                     cursor.execute("INSERT INTO Prices (product_id, price) VALUES (?, ?)", (product_id, price))
-                    conn.commit()
+
+
+                    
 
                     # Send email to users who are tracking this product
                     cursor.execute("SELECT email FROM Users WHERE product_url = ?", (product_url,))
@@ -66,6 +73,9 @@ def update_all_products():
                         subject = f"Price Update for {product_name}\n\n"
                         body = f"The price for '{product_name}' has changed to {price} TL.\n\nCheck the product at {product_url}."
                         send_email(user_email, subject, body)
+
+                                        
+                    conn.commit()
                 else:
                     print(f"No price change for {product_name} (ID: {product_id})")
             else:
@@ -75,10 +85,12 @@ def update_all_products():
             
         except Exception as e:
             print(f"Error updating product {product_url}: {e}")
-    
+
+        time.sleep(4)
+        
     conn.close()
 
 while True:
     update_all_products()
     print("All products updated. Waiting for the next update...")
-    time.sleep(600)  # Update every minute
+    time.sleep(10)  # Update every minute
