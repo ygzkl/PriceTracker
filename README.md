@@ -8,7 +8,7 @@
 - Scrapes product data (name, price, product ID) from Amazon.com.tr URLs.
 - Stores product data locally in an SQLite database and tracks price changes.
 - Email notifications when the price of a tracked product drops.
-- Simple user interface built with tkinter that allows users to input product links.
+- User-friendly interface built with Tkinter, allowing users to easily input product links, view existing products, and check the status of price tracking. The interface provides fields for entering a product URL and user email, as well as buttons for adding new products and viewing product data with price history.
 
 
 ## Installation
@@ -29,18 +29,21 @@ pip install -r requirements.txt
 python database.py
 ```
 
-4. Runs the get_info.py script to collect user email and product URL
+4. Run the price_update.py to start tracking Amazon products and update existing ones
+```bash
+python price_update.py
+```
+
+5. Run the get_info.py script to collect user email and product URL. This script allows adding new products and showing existing products along with their last 10 prices.
 ```bash
 python get_info.py
 ```
 
-![add_user](https://github.com/user-attachments/assets/552e418a-b7ce-4045-8ccd-829a04119729)
+![add_user-2](https://github.com/user-attachments/assets/d5015f55-f3e4-4e8c-b90d-d551a8f16d64)
+*This step allows you to add new products by entering the user email and product URL.*
 
-
-5. Run the price_update.py to start tracking Amazon products and update existing ones
-```bash
-python price_update.py
-```
+![graph](https://github.com/user-attachments/assets/47414be3-e82c-499d-837a-595ff34c79dc)
+*Here, you can view existing products along with their last 10 prices, displayed in a graph.*
 
 
 ## Additional Notes

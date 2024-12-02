@@ -85,4 +85,4 @@ def update_all_products():
 while True:
     update_all_products()
     print("All products updated. Waiting for the next update...")
-    time.sleep(5)  # Update every minute
+    time.sleep(300)  # Update every 5 minute
