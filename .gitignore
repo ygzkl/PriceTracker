@@ -4,5 +4,8 @@ products.db
 # Ignore the environment variables file
 .env
 
+# Ignore the macOS system files
+.DS_Store
+
 # Ignore the folders
 /__pycache__/

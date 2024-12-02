@@ -17,11 +17,12 @@ def add_or_update_product_and_price(product_id, product_name, price, url):
             cursor.execute("INSERT INTO Products (product_id, product_name, product_url) VALUES (?, ?, ?)", 
                            (product_id, product_name, url))
             print(f"Added new product: {product_name} (ID: {product_id})")
-
-        # Add the price to the Prices table
-        cursor.execute("INSERT INTO Prices (product_id, price) VALUES (?, ?)", 
+            cursor.execute("INSERT INTO Prices (product_id, price) VALUES (?, ?)", 
                        (product_id, price))
-
+                   
+        else:
+            cursor.execute("UPDATE Products SET product_name = ? WHERE product_id = ?", 
+                            (product_name, product_id))
         conn.commit()
     except sqlite3.OperationalError as e:
         print(f"Database error: {e}")
@@ -72,3 +73,4 @@ def get_product_details(url):
         return f"Product: {product_name}\nPrice: {price}\nProduct ID: {product_id}"
     else:
         return "Error: Price not found, not saved to the database."
+
