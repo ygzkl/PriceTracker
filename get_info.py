@@ -1,6 +1,8 @@
 import sqlite3
 import tkinter as tk
 from tkinter import messagebox
+import matplotlib.pyplot as plt
+from datetime import datetime
 
 def add_user():
     email = email_entry.get()
@@ -29,6 +31,54 @@ def add_user():
     product_url_entry.delete(0, tk.END)
 
 def show_products():
+    def show_graph():
+        # Get the selected product
+        selected_index = product_listbox.curselection()
+        if not selected_index:
+            messagebox.showerror("Error", "Please select a product!")
+            return
+        
+        selected_product = product_listbox.get(selected_index).split(" | ")[0].split(": ")[1]
+
+        conn = sqlite3.connect('products.db')
+        cursor = conn.cursor()
+
+        # Get product ID
+        cursor.execute("SELECT product_id FROM Products WHERE product_name = ?", (selected_product,))
+        product_id = cursor.fetchone()
+        if not product_id:
+            messagebox.showerror("Error", "Product ID not found!")
+            return
+        
+        product_id = product_id[0]
+
+        # Get the last 10 prices
+        cursor.execute('''SELECT price, date FROM Prices 
+                          WHERE product_id = ? 
+                          ORDER BY date DESC LIMIT 10''', (product_id,))
+        data = cursor.fetchall()
+
+        if not data:
+            messagebox.showinfo("Info", "No price data available for this product.")
+            return
+
+        conn.close()
+
+        # Separate data into two lists for plotting
+        prices, dates = zip(*data)
+        dates = [datetime.strptime(d, "%Y-%m-%d %H:%M:%S") for d in dates]
+
+        # Plot the graph
+        plt.figure(figsize=(10, 6))
+        plt.plot(dates, prices, marker='o', linestyle='-', color='b')
+        plt.title(f"Last 10 Prices for {selected_product}")
+        plt.xlabel("Date")
+        plt.ylabel("Price")
+        plt.grid(True)
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        plt.show()
+
     # Create a new window
     product_window = tk.Toplevel(root)
     product_window.title("Product List")
@@ -36,6 +86,9 @@ def show_products():
     # Create a listbox to display products
     product_listbox = tk.Listbox(product_window, width=50, height=10)
     product_listbox.pack(padx=10, pady=10)
+
+    # Create a button to show graph
+    tk.Button(product_window, text="Show Graph", command=show_graph).pack(pady=10)
 
     conn = sqlite3.connect('products.db')
     cursor = conn.cursor()
