@@ -29,17 +29,17 @@ pip install -r requirements.txt
 python database.py
 ```
 
-4. Runs the getInfo.py script to collect user email and product URL
+4. Runs the get_info.py script to collect user email and product URL
 ```bash
-python getInfo.py
+python get_info.py
 ```
 
 ![add_user](https://github.com/user-attachments/assets/552e418a-b7ce-4045-8ccd-829a04119729)
 
 
-5. Run the priceUpdate.py to start tracking Amazon products and update existing ones
+5. Run the price_update.py to start tracking Amazon products and update existing ones
 ```bash
-python priceUpdate.py
+python price_update.py
 ```
 
 
