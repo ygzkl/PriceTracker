@@ -7,7 +7,7 @@
 
 - Scrapes product data (name, price, product ID) from Amazon.com.tr URLs.
 - Stores product data locally in an SQLite database and tracks price changes.
-- Email notifications when the price of a tracked product drops.
+- Email notifications with SMTP when the price of a tracked product drops.
 - User-friendly interface built with Tkinter, allowing users to easily input product links, view existing products, and check the status of price tracking. The interface provides fields for entering a product URL and user email, as well as buttons for adding new products and viewing product data with price history.
 
 
